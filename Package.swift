@@ -12,6 +12,7 @@ func swiftSettings() -> [SwiftSetting] {
 
 let package = Package(
     name: "webform-dot-encoding",
+    platforms: [.macOS(.v13)],
     products: [
         .library(
             name: "WebformDotEncoding",

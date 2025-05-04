@@ -6,7 +6,7 @@ public enum PercentEncoding {
 
         init() {
             allowed = CharacterSet.urlQueryAllowed
-            allowed.remove(charactersIn: "?&=;+:/")
+            allowed.remove(charactersIn: "?&=;+:/.")
         }
 
         var allowed: CharacterSet
@@ -23,9 +23,9 @@ public enum PercentEncoding {
     public static func decode(
         string: some StringProtocol,
         file: StaticString = #file, line: UInt = #line
-    ) throws(WebformDotEncodingError) -> String {
+    ) throws(BrokenPercentEncodingError) -> String {
         guard let string = string.removingPercentEncoding else {
-            throw WebformDotEncodingError(reason: .brokenPercentEncoding, file: file, line: line)
+            throw BrokenPercentEncodingError(string: string, file: file, line: line)
         }
         return string
     }
