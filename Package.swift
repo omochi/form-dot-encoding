@@ -12,16 +12,22 @@ func swiftSettings() -> [SwiftSetting] {
 
 let package = Package(
     name: "webform-dot-encoding",
-    platforms: [.macOS(.v13)],
+    platforms: [.macOS(.v15)],
     products: [
         .library(
             name: "WebformDotEncoding",
             targets: ["WebformDotEncoding"]
         ),
     ],
+    dependencies: [
+        .package(url: "https://github.com/apple/swift-collections.git", from: "1.1.4"),
+    ],
     targets: [
         .target(
             name: "WebformDotEncoding",
+            dependencies: [
+                .product(name: "Collections", package: "swift-collections"),
+            ],
             swiftSettings: swiftSettings(),
         ),
         .testTarget(
