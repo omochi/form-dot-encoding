@@ -53,7 +53,7 @@ public struct FormDotDecoder {
         var codingPath: [any CodingKey] { decoder.codingPath }
 
         func decodeNil() -> Bool {
-            true
+            false
         }
 
         func decode<T: Primitive>(_ type: T.Type) throws -> T {
@@ -107,8 +107,7 @@ public struct FormDotDecoder {
         }
 
         mutating func decodeNil() -> Bool {
-            _ = nested()
-            return true
+            false
         }
 
         mutating func superDecoder() -> any Decoder {
@@ -148,7 +147,7 @@ public struct FormDotDecoder {
         }
 
         func decodeNil(forKey key: Key) throws -> Bool {
-            true
+            false
         }
 
         private func nested(key: some CodingKey) -> _Decoder {
