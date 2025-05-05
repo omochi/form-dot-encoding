@@ -64,3 +64,7 @@ let decoder = FormDotDecoder()
 let decoded = try decoder.decode(Profile.self, from: query)
 #expect(decoded == profile)
 ```
+
+## Further Examples and Tests
+
+For more details and edge cases, check the [test cases](Tests/FormDotEncodingTests).
