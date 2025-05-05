@@ -15,9 +15,7 @@ public struct FormDotEncoder {
             tree: ValueTree(), codingPath: [], userInfo: userInfo
         )
         try value.encode(to: encoder)
-//        dump(encoder.tree)
         _ = encoder.tree.preserveEmptyObject()
-//        dump(encoder.tree)
         return encoder.tree.query()
     }
 
