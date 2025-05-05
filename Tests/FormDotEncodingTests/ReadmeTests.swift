@@ -44,4 +44,20 @@ import FormDotEncoding
         let decoded = try decoder.decode(Profile.self, from: query)
         #expect(decoded == profile)
     }
+
+    @Test func enumCoding() throws {
+        enum Status: Codable & Equatable {
+            case active
+        }
+
+        let status = Status.active
+
+        let encoder = FormDotEncoder()
+        let query = try encoder.encode(status)
+        #expect(query == "active=_")
+
+        let decoder = FormDotDecoder()
+        let decoded = try decoder.decode(Status.self, from: query)
+        #expect(decoded == status)
+    }
 }
