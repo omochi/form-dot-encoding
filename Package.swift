@@ -20,14 +20,10 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/apple/swift-collections.git", from: "1.1.4"),
     ],
     targets: [
         .target(
             name: "FormDotEncoding",
-            dependencies: [
-                .product(name: "Collections", package: "swift-collections"),
-            ],
             swiftSettings: swiftSettings(),
         ),
         .testTarget(

@@ -1,5 +1,3 @@
-import Collections
-
 final class ValueTree {
     enum Value {
         case null
