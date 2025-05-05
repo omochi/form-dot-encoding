@@ -18,7 +18,7 @@ public struct FormDotEncoder {
         return encoder.tree.query()
     }
 
-    final class _Encoder: Encoder {
+    struct _Encoder: Encoder {
         init(tree: ValueTree, codingPath: [any CodingKey], userInfo: [CodingUserInfoKey: Any]) {
             self.tree = ValueTree()
         }
@@ -32,7 +32,7 @@ public struct FormDotEncoder {
         }
 
         func unkeyedContainer() -> any UnkeyedEncodingContainer {
-
+            UC(encoder: self)
         }
 
         func container<Key>(keyedBy type: Key.Type) -> KeyedEncodingContainer<Key> where Key : CodingKey {
@@ -45,26 +45,64 @@ public struct FormDotEncoder {
         
         var codingPath: [any CodingKey] { encoder.codingPath }
 
-        private func set(_ string: String) {
-            encoder.tree.value = string
+        func encodeNil() throws {}
+
+        func encode(_ value: some Primitive) throws {
+            encoder.tree.value = value.description
         }
 
-        mutating func encodeNil() throws {}
-
-        mutating func encode(_ value: String) throws {
-            encoder.tree.value = value
-        }
-
-        mutating func encode(_ value: some Primitive) throws {
-            try encode(value.description)
-        }
-
-        mutating func encode(_ value: some Primitive & Encodable) throws {
-            try encode(value.description)
-        }
-
-        mutating func encode(_ value: some Encodable) throws {
+        func encode(_ value: some Encodable) throws {
             try value.encode(to: encoder)
+        }
+
+        func encode(_ value: some Primitive & Encodable) throws {
+            encoder.tree.value = value.description
+        }
+    }
+
+    struct UC: UnkeyedEncodingContainer {
+        let encoder: _Encoder
+
+        var codingPath: [any CodingKey] { encoder.codingPath }
+
+        var count: Int { encoder.tree.array.count }
+
+        func encodeNil() throws {
+            encoder.tree.array.append(nil)
+        }
+
+        private func nested() -> _Encoder {
+            let nested = _Encoder(
+                tree: ValueTree(),
+                codingPath: codingPath + [IntCodingKey(intValue: count)],
+                userInfo: encoder.userInfo
+            )
+            encoder.tree.array.append(nested.tree)
+            return nested
+        }
+
+        func nestedContainer<NestedKey: CodingKey>(keyedBy keyType: NestedKey.Type) -> KeyedEncodingContainer<NestedKey> {
+            nested().container(keyedBy: keyType)
+        }
+
+        func nestedUnkeyedContainer() -> any UnkeyedEncodingContainer {
+            nested().unkeyedContainer()
+        }
+
+        func superEncoder() -> any Encoder {
+            nested()
+        }
+
+        func encode(_ value: some Primitive) throws {
+            try SVC(encoder: nested()).encode(value)
+        }
+
+        func encode(_ value: some Encodable) throws {
+            try SVC(encoder: nested()).encode(value)
+        }
+
+        func encode(_ value: some Primitive & Encodable) throws {
+            try SVC(encoder: nested()).encode(value)
         }
     }
 }

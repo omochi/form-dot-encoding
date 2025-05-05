@@ -13,3 +13,4 @@ extension Int: Primitive {}
 extension UInt: Primitive {}
 extension Float: Primitive {}
 extension Double: Primitive {}
+extension String: Primitive {}
