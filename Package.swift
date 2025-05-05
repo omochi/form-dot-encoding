@@ -11,12 +11,12 @@ func swiftSettings() -> [SwiftSetting] {
 }
 
 let package = Package(
-    name: "webform-dot-encoding",
+    name: "form-dot-encoding",
     platforms: [.macOS(.v15)],
     products: [
         .library(
-            name: "WebformDotEncoding",
-            targets: ["WebformDotEncoding"]
+            name: "FormDotEncoding",
+            targets: ["FormDotEncoding"]
         ),
     ],
     dependencies: [
@@ -24,15 +24,15 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "WebformDotEncoding",
+            name: "FormDotEncoding",
             dependencies: [
                 .product(name: "Collections", package: "swift-collections"),
             ],
             swiftSettings: swiftSettings(),
         ),
         .testTarget(
-            name: "WebformDotEncodingTests",
-            dependencies: ["WebformDotEncoding"],
+            name: "FormDotEncodingTests",
+            dependencies: ["FormDotEncoding"],
             swiftSettings: swiftSettings(),
         ),
     ],
