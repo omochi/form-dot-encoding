@@ -154,4 +154,31 @@ final class ValueTree {
             node.loadQueryElement(path: path, value: value)
         }
     }
+
+    func preserveEmptyObject(depth: Int = 0) -> Int {
+        switch value {
+        case .null: return 0
+        case .string: return 1
+        case .object(let xs):
+            var c = 0
+            for x in xs.values {
+                c += x.preserveEmptyObject(depth: depth + 1)
+            }
+            if c == 0, depth >= 1 {
+                self.string = "_"
+                return 1
+            }
+            return c
+        case .array(let xs):
+            var c = 0
+            for x in xs {
+                c += x.preserveEmptyObject(depth: depth + 1)
+            }
+            if c == 0, depth >= 1 {
+                self.string = "_"
+                return 1
+            }
+            return c
+        }
+    }
 }

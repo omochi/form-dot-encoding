@@ -89,7 +89,7 @@ public struct FormDotDecoder {
 
         var codingPath: [any CodingKey] { decoder.codingPath }
 
-        var count: Int? { decoder.tree.array?.count }
+        var count: Int? { decoder.tree.array?.count ?? 0 }
 
         var isAtEnd: Bool { currentIndex == count }
 
