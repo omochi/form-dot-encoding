@@ -63,24 +63,29 @@ final class ValueTree {
         }
         for (index, element) in array.enumerated() {
             if let element {
-                query(path: path + [index.description], result: &result)
+                element.query(path: path + [index.description], result: &result)
             }
         }
-        let keys = object.keys.sorted()
-        for key in keys {
-            query(path: path + [key], result: &result)
+        for (key, element) in object.sorted(by: { $0.key < $1.key }) {
+            element.query(path: path + [key], result: &result)
         }
     }
 
-    func setQuery(_ query: URLQuery) {
+    convenience init(query: URLQuery) {
+        self.init()
+
+        self.loadQuery(query)
+    }
+
+    func loadQuery(_ query: URLQuery) {
         for element in query {
             if let value = element.value {
-                setQueryElement(path: element.path[...], value: value)
+                loadQueryElement(path: element.path[...], value: value)
             }
         }
     }
 
-    func setQueryElement(path: ArraySlice<String>, value: String) {
+    func loadQueryElement(path: ArraySlice<String>, value: String) {
         guard let key = path.first else {
             self.value = value
             return
@@ -91,10 +96,10 @@ final class ValueTree {
 
         if let index = Int(key) {
             let node = assumeIndex(index)
-            node.setQueryElement(path: path, value: value)
+            node.loadQueryElement(path: path, value: value)
         } else {
             let node = assumeKey(key)
-            node.setQueryElement(path: path, value: value)
+            node.loadQueryElement(path: path, value: value)
         }
     }
 }

@@ -7,6 +7,7 @@ import WebformDotEncoding
         (.init(path: ["a"], value: "x"), "a=x"),
         (.init(path: ["a"], value: ""), "a="),
         (.init(path: ["a"], value: nil), "a"),
+        (.init(path: [], value: "x"), "=x"),
         (.init(path: ["あ"], value: "い"), "%E3%81%82=%E3%81%84"),
         (.init(path: ["a", "b", "c"], value: "x"), "a.b.c=x"),
         (.init(path: ["あ", "い"], value: "x"), "%E3%81%82.%E3%81%84=x"),
@@ -41,6 +42,7 @@ import WebformDotEncoding
 
         let queryItemsEncoded = query.percentEncodedQueryItems
         let queryItemsDecoded = try URLQuery.parse(percentEncodedQueryItems: queryItemsEncoded)
+        #expect(queryItemsDecoded == query)
     }
 
     @Test func foundationURLQueryPercentEncoding() {
