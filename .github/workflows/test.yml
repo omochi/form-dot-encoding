@@ -1,0 +1,31 @@
+name: server-test
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    paths:
+      - .github/workflows/test.yml
+      - ci/**
+      - Package.*
+      - Sources/**
+      - Tests/**
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GIT_AUTH_TOKEN }}
+
+      - name: uninstall older swift
+        run: sudo rm -rf /usr/share/swift
+      - run: cp ci/install-swift.bash /home/runner
+      - name: install swift
+        run: sudo ./install-swift.bash
+        working-directory: /home/runner
+      - run: swift --version
+
+      - run: swift package resolve
+      - run: swift build
+      - run: swift test
