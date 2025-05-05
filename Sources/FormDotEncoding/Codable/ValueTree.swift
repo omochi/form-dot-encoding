@@ -66,7 +66,9 @@ final class ValueTree {
 
     private func query(path: URLQueryElement.Path, result: inout URLQuery) {
         if isEmpty {
-            result.append(.init(path: path, value: "."))
+            if path.count >= 1 {
+                result.append(.init(path: path, value: "_"))
+            }
             return
         }
 
