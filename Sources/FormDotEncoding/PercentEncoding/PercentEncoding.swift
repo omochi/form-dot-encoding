@@ -6,7 +6,7 @@ public enum PercentEncoding {
 
         init() {
             allowed = CharacterSet.urlQueryAllowed
-            allowed.remove(charactersIn: "?&=;+:/.")
+            allowed.remove(charactersIn: "?&=;+:/")
         }
 
         var allowed: CharacterSet

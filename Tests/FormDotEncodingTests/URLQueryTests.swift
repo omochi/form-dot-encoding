@@ -13,7 +13,6 @@ import FormDotEncoding
         (.init(path: ["あ", "い"], value: "x"), "%E3%81%82.%E3%81%84=x"),
         (.init(path: ["_", "-"], value: "x"), "_.-=x"),
         (.init(path: ["%", "=", "&", "/"], value: "x"), "%25.%3D.%26.%2F=x"),
-        (.init(path: ["a.b", "c.d"], value: "x"), "a%2Eb.c%2Ed=x"),
     ] as [(URLQueryElement, String)])
     func elementEncoding(element: URLQueryElement, expected: String) throws {
         let encoded = element.description

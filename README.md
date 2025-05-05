@@ -11,7 +11,7 @@ Encodes `Codable` data as `www-form-urlencoded` using dot-separated keys.
 # Installation
 
 ```swift
-.package(url: "https://github.com/omochi/form-dot-encoding.git", from: "0.1.0")
+.package(url: "https://github.com/omochi/form-dot-encoding.git", from: "0.1.1")
 ```
 
 # Usage
