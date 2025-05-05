@@ -52,10 +52,15 @@ public struct FormDotDecoder {
 
         var codingPath: [any CodingKey] { decoder.codingPath }
 
-        func decodeNil() -> Bool { false }
+        func decodeNil() -> Bool {
+            switch decoder.tree.value {
+            case .null: return true
+            default: return false
+            }
+        }
 
         func decode<T: Primitive>(_ type: T.Type) throws -> T {
-            guard let string = decoder.tree.value else {
+            guard let string = decoder.tree.string else {
                 let x = DecodingError.Context(
                     codingPath: codingPath, debugDescription: "no value"
                 )
@@ -84,7 +89,7 @@ public struct FormDotDecoder {
 
         var codingPath: [any CodingKey] { decoder.codingPath }
 
-        var count: Int? { decoder.tree.array.count }
+        var count: Int? { decoder.tree.array?.count }
 
         var isAtEnd: Bool { currentIndex == count }
 
@@ -92,7 +97,7 @@ public struct FormDotDecoder {
 
         mutating func nested() -> _Decoder {
             let decoder = _Decoder(
-                tree: decoder.tree.array[currentIndex] ?? ValueTree(),
+                tree: decoder.tree.array?[currentIndex] ?? ValueTree(),
                 codingPath: codingPath + [_CodingKey.int(currentIndex)],
                 userInfo: decoder.userInfo
             )
@@ -137,16 +142,16 @@ public struct FormDotDecoder {
         var codingPath: [any CodingKey] { decoder.codingPath }
 
         var allKeys: [Key] {
-            decoder.tree.object.keys.sorted().compactMap(Key.init)
+            decoder.tree.object?.keys.sorted().compactMap(Key.init) ?? []
         }
 
         func contains(_ key: Key) -> Bool {
-            decoder.tree.object[key.stringValue] != nil
+            decoder.tree.object?[key.stringValue] != nil
         }
 
         private func nested(key: some CodingKey) -> _Decoder {
             _Decoder(
-                tree: decoder.tree.object[key.stringValue] ?? ValueTree(),
+                tree: decoder.tree.object?[key.stringValue] ?? ValueTree(),
                 codingPath: codingPath + [key],
                 userInfo: decoder.userInfo
             )

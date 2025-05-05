@@ -1,61 +1,104 @@
 import Collections
 
 final class ValueTree {
-    init(
-        value: String? = nil,
-        array: [ValueTree?] = [],
-        object: [String: ValueTree] = [:]
-    ) {
-        self.value = value
-        self.array = array
-        self.object = object
-    }
+    enum Value {
+        case null
+        case string(String)
+        case array([ValueTree])
+        case object([String: ValueTree])
 
-    var value: String?
-    var array: [ValueTree?]
-    var object: [String: ValueTree]
-
-    var isEmpty: Bool {
-        guard value == nil else { return false }
-        guard array.allSatisfy({ $0 == nil }) else { return false }
-        guard object.isEmpty else { return false }
-        return true
-    }
-
-    subscript(index index: Int) -> ValueTree? {
-        get {
-            guard 0 <= index, index < array.count else { return nil }
-            return array[index]
-        }
-        set {
-            while array.count <= index {
-                array.append(nil)
+        var string: String? {
+            get {
+                switch self {
+                case .string(let x): return x
+                default: return nil
+                }
             }
-            array[index] = newValue
+            set {
+                guard let newValue else { return }
+                self = .string(newValue)
+            }
+        }
+
+        var array: [ValueTree]? {
+            get {
+                switch self {
+                case .array(let x): return x
+                default: return nil
+                }
+            }
+            set {
+                guard let newValue else { return }
+                self = .array(newValue)
+            }
+        }
+
+        var object: [String: ValueTree]? {
+            get {
+                switch self {
+                case .object(let x): return x
+                default: return nil
+                }
+            }
+            set {
+                guard let newValue else { return }
+                self = .object(newValue)
+            }
         }
     }
 
-    private func assumeIndex(_ index: Int) -> ValueTree {
-        if let node = self[index: index] { return node }
-        let node = ValueTree()
-        self[index: index] = node
-        return node
+    init(_ value: Value = .null) {
+        self.value = value
     }
 
-    subscript(key key: String) -> ValueTree? {
-        get {
-            object[key]
-        }
-        set {
-            object[key] = newValue
-        }
+    var value: Value
+
+    var string: String? {
+        get { value.string }
+        set { value.string = newValue }
     }
 
-    private func assumeKey(_ key: String) -> ValueTree {
-        if let node = self[key: key] { return node }
-        let node = ValueTree()
-        self[key: key] = node
-        return node
+    var array: [ValueTree]? {
+        get { value.array }
+        set { value.array = newValue }
+    }
+
+    func assumeArray() -> [ValueTree] {
+        if let array { return array }
+        let array: [ValueTree] = []
+        self.array = array
+        return array
+    }
+
+    var object: [String: ValueTree]? {
+        get { value.object }
+        set { value.object = newValue }
+    }
+
+    func assumeObject() -> [String: ValueTree] {
+        if let object { return object }
+        let object: [String: ValueTree] = [:]
+        self.object = object
+        return object
+    }
+
+    func arrayElement(index: Int) -> ValueTree {
+        precondition(0 <= index)
+        var array = self.assumeArray()
+        while array.count <= index {
+            array.append(ValueTree())
+        }
+        self.array = array
+        return array[index]
+    }
+
+    func objectElement(key: String) -> ValueTree {
+        var object = self.assumeObject()
+        if object[key] == nil {
+            object[key] = ValueTree()
+        }
+        self.object = object
+        return object[key]!
     }
 
     func query(path: URLQueryElement.Path = []) -> URLQuery {
@@ -65,23 +108,18 @@ final class ValueTree {
     }
 
     private func query(path: URLQueryElement.Path, result: inout URLQuery) {
-        if isEmpty {
-            if path.count >= 1 {
-                result.append(.init(path: path, value: "_"))
-            }
-            return
-        }
-
-        if let value {
-            result.append(.init(path: path, value: value))
-        }
-        for (index, element) in array.enumerated() {
-            if let element {
+        switch value {
+        case .null: return
+        case .string(let x):
+            result.append(.init(path: path, value: x))
+        case .array(let x):
+            for (index, element) in x.enumerated() {
                 element.query(path: path + [index.description], result: &result)
             }
-        }
-        for (key, element) in object.sorted(by: { $0.key < $1.key }) {
-            element.query(path: path + [key], result: &result)
+        case .object(let x):
+            for (key, element) in x.sorted(by: { $0.key < $1.key }) {
+                element.query(path: path + [key], result: &result)
+            }
         }
     }
 
@@ -101,7 +139,7 @@ final class ValueTree {
 
     func loadQueryElement(path: ArraySlice<String>, value: String) {
         guard let key = path.first else {
-            self.value = value
+            self.string = value
             return
         }
 
@@ -109,10 +147,10 @@ final class ValueTree {
         path.removeFirst()
 
         if let index = Int(key) {
-            let node = assumeIndex(index)
+            let node = self.arrayElement(index: index)
             node.loadQueryElement(path: path, value: value)
         } else {
-            let node = assumeKey(key)
+            let node = self.objectElement(key: key)
             node.loadQueryElement(path: path, value: value)
         }
     }

@@ -15,6 +15,7 @@ public struct FormDotEncoder {
             tree: ValueTree(), codingPath: [], userInfo: userInfo
         )
         try value.encode(to: encoder)
+        dump(encoder.tree)
         return encoder.tree.query()
     }
 
@@ -41,10 +42,12 @@ public struct FormDotEncoder {
 
         var codingPath: [any CodingKey] { encoder.codingPath }
 
-        func encodeNil() {}
+        func encodeNil() {
+
+        }
 
         func encode(_ value: some Primitive) {
-            encoder.tree.value = value.description
+            encoder.tree.string = value.description
         }
 
         func encode(_ value: some Encodable) throws {
@@ -53,11 +56,16 @@ public struct FormDotEncoder {
     }
 
     struct UC: UnkeyedEncodingContainer {
+        init(encoder: _Encoder) {
+            self.encoder = encoder
+            _ = encoder.tree.assumeArray()
+        }
+
         let encoder: _Encoder
 
         var codingPath: [any CodingKey] { encoder.codingPath }
 
-        var count: Int { encoder.tree.array.count }
+        var count: Int { encoder.tree.array?.count ?? 0 }
 
         private func nested() -> _Encoder {
             let nested = _Encoder(
@@ -65,7 +73,9 @@ public struct FormDotEncoder {
                 codingPath: codingPath + [_CodingKey.int(count)],
                 userInfo: encoder.userInfo
             )
-            encoder.tree.array.append(nested.tree)
+            var array = encoder.tree.assumeArray()
+            array.append(nested.tree)
+            encoder.tree.array = array
             return nested
         }
 
@@ -95,6 +105,11 @@ public struct FormDotEncoder {
     }
 
     struct KC<Key: CodingKey>: KeyedEncodingContainerProtocol {
+        init(encoder: _Encoder) {
+            self.encoder = encoder
+            _ = encoder.tree.assumeObject()
+        }
+
         let encoder: _Encoder
 
         var codingPath: [any CodingKey] { encoder.codingPath }
@@ -105,7 +120,9 @@ public struct FormDotEncoder {
                 codingPath: codingPath + [key],
                 userInfo: encoder.userInfo
             )
-            encoder.tree.object[key.stringValue] = nested.tree
+            var object = encoder.tree.assumeObject()
+            object[key.stringValue] = nested.tree
+            encoder.tree.object = object
             return nested
         }
 

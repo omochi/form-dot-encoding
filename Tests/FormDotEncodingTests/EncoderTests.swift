@@ -6,7 +6,7 @@ import FormDotEncoding
         var a: Int?
         var k: K?
         var v: [K]?
-        var w: [K?]
+        var w: [K?]?
     }
 
     struct K: Codable & Equatable {
@@ -27,7 +27,11 @@ import FormDotEncoding
 //        (S(v: [K()]), "v.0=_"),
 //        (S(v: [K(a: 1)]), "v.0.a=1"),
 //        (S(v: [K(a: 1), K(), K(a: 2)]), "v.0.a=1&v.1=_&v.2.a=2"),
-        (S(w: [nil, nil, K()]), "w.0=_&w.1=_&w.2=_"),
+//        (S(w: []), "w=_"),
+//        (S(w: [nil]), "w.0=_"),
+        (S(w: [K()]), "w.0=_"),
+//        (S(w: [nil, K()]), "w.0=_&w.1=_"),
+//        (S(w: [nil, K(a: 1)]), "w.0=_&w.1.a=1"),
 //        (E.a, "a=_"),
 //        (E.b(K(a: 1)), "b._0.a=1"),
 //        (E.b(K()), "b._0=_"),
