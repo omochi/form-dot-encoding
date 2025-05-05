@@ -1,6 +1,6 @@
 import Testing
 import Foundation
-import WebformDotEncoding
+import FormDotEncoding
 
 @Suite struct URLQueryTests {
     @Test(arguments: [

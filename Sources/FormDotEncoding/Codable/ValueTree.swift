@@ -15,6 +15,13 @@ final class ValueTree {
     var array: [ValueTree?]
     var object: [String: ValueTree]
 
+    var isEmpty: Bool {
+        guard value == nil else { return false }
+        guard array.allSatisfy({ $0 == nil }) else { return false }
+        guard object.isEmpty else { return false }
+        return true
+    }
+
     subscript(index index: Int) -> ValueTree? {
         get {
             guard 0 <= index, index < array.count else { return nil }
@@ -58,6 +65,11 @@ final class ValueTree {
     }
 
     private func query(path: URLQueryElement.Path, result: inout URLQuery) {
+        if isEmpty {
+            result.append(.init(path: path, value: "."))
+            return
+        }
+
         if let value {
             result.append(.init(path: path, value: value))
         }

@@ -1,6 +1,6 @@
 import Testing
 import Foundation
-@testable import WebformDotEncoding
+@testable import FormDotEncoding
 
 @Suite struct ValueTreeTests {
     @Test(arguments: [
@@ -14,6 +14,7 @@ import Foundation
         URLQuery(.init(path: ["2"], value: "x")),
         URLQuery(.init(path: ["0", "a"], value: "x")),
         URLQuery(.init(path: ["2", "2", "a"], value: "x"), .init(path: ["2", "2", "b"], value: "x")),
+        URLQuery(.init(path: ["a", "b"], value: ".")),
     ]) func valueTree(query: URLQuery) throws {
         let tree = ValueTree(query: query)
         let encoded = tree.query()
