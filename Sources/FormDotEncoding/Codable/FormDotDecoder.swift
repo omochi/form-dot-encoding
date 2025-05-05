@@ -52,9 +52,7 @@ public struct FormDotDecoder {
 
         var codingPath: [any CodingKey] { decoder.codingPath }
 
-        func decodeNil() -> Bool {
-            false
-        }
+        func decodeNil() -> Bool { false }
 
         func decode<T: Primitive>(_ type: T.Type) throws -> T {
             guard let string = decoder.tree.value else {
@@ -106,10 +104,6 @@ public struct FormDotDecoder {
             return decoder
         }
 
-        mutating func decodeNil() -> Bool {
-            false
-        }
-
         mutating func superDecoder() -> any Decoder {
             nested()
         }
@@ -122,6 +116,10 @@ public struct FormDotDecoder {
             keyedBy type: NestedKey.Type
         ) -> KeyedDecodingContainer<NestedKey> {
             nested().container(keyedBy: type)
+        }
+
+        mutating func decodeNil() -> Bool {
+            SC(decoder: nested()).decodeNil()
         }
 
         mutating func decode<T: Primitive>(_ type: T.Type) throws -> T {
@@ -144,10 +142,6 @@ public struct FormDotDecoder {
 
         func contains(_ key: Key) -> Bool {
             decoder.tree.object[key.stringValue] != nil
-        }
-
-        func decodeNil(forKey key: Key) throws -> Bool {
-            false
         }
 
         private func nested(key: some CodingKey) -> _Decoder {
@@ -174,6 +168,10 @@ public struct FormDotDecoder {
             keyedBy type: NestedKey.Type, forKey key: Key
         ) -> KeyedDecodingContainer<NestedKey> {
             nested(key: key).container(keyedBy: type)
+        }
+
+        func decodeNil(forKey key: Key) -> Bool {
+            SC(decoder: nested(key: key)).decodeNil()
         }
 
         func decode<T: Primitive>(_ type: T.Type, forKey key: Key) throws -> T {

@@ -41,9 +41,9 @@ public struct FormDotEncoder {
 
         var codingPath: [any CodingKey] { encoder.codingPath }
 
-        func encodeNil() throws {}
+        func encodeNil() {}
 
-        func encode(_ value: some Primitive) throws {
+        func encode(_ value: some Primitive) {
             encoder.tree.value = value.description
         }
 
@@ -58,10 +58,6 @@ public struct FormDotEncoder {
         var codingPath: [any CodingKey] { encoder.codingPath }
 
         var count: Int { encoder.tree.array.count }
-
-        func encodeNil() throws {
-            encoder.tree.array.append(nil)
-        }
 
         private func nested() -> _Encoder {
             let nested = _Encoder(
@@ -85,8 +81,12 @@ public struct FormDotEncoder {
             nested().container(keyedBy: keyType)
         }
 
-        func encode(_ value: some Primitive) throws {
-            try SC(encoder: nested()).encode(value)
+        func encodeNil() {
+            SC(encoder: nested()).encodeNil()
+        }
+
+        func encode(_ value: some Primitive) {
+            SC(encoder: nested()).encode(value)
         }
 
         func encode(_ value: some Encodable) throws {
@@ -109,10 +109,6 @@ public struct FormDotEncoder {
             return nested
         }
 
-        func encodeNil(forKey key: Key) throws {
-            _ = nested(key: key)
-        }
-
         func superEncoder() -> any Encoder {
             nested(key: _CodingKey.super)
         }
@@ -131,8 +127,12 @@ public struct FormDotEncoder {
             nested(key: key).container(keyedBy: keyType)
         }
 
-        func encode(_ value: some Primitive, forKey key: Key) throws {
-            try SC(encoder: nested(key: key)).encode(value)
+        func encodeNil(forKey key: Key) {
+            SC(encoder: nested(key: key)).encodeNil()
+        }
+
+        func encode(_ value: some Primitive, forKey key: Key) {
+            SC(encoder: nested(key: key)).encode(value)
         }
 
         func encode(_ value: some Encodable, forKey key: Key) throws {
