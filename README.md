@@ -40,13 +40,13 @@ let result = try encoder.encode(profile)
 By inserting a placeholder value (`_`) for empty containers, the encoder preserves the distinction between `nil` and empty objects. This ensures that even collapsed or empty objects and arrays are round-trip encodable and decodable.
 
 ```swift
-struct Profile: Codable, Equatable {
+struct Profile: Codable & Equatable {
     var primaryAddress: Address?
     var secondaryAddress: Address?
     var billingAddress: Address?
 }
 
-struct Address: Codable, Equatable {
+struct Address: Codable & Equatable {
     var zipCode: String?
 }
 

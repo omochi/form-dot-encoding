@@ -20,13 +20,13 @@ import FormDotEncoding
     }
 
     @Test func distinguishNilAndCollapsed() throws {
-        struct Profile: Codable, Equatable {
+        struct Profile: Codable & Equatable {
             var primaryAddress: Address?
             var secondaryAddress: Address?
             var billingAddress: Address?
         }
 
-        struct Address: Codable, Equatable {
+        struct Address: Codable & Equatable {
             var zipCode: String?
         }
 
