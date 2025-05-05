@@ -23,4 +23,6 @@ enum _CodingKey: CodingKey {
         case .string(let x): return Int(x)
         }
     }
+
+    static let `super`: _CodingKey = .string("super")
 }
