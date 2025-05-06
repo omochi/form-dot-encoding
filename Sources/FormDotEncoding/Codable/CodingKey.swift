@@ -1,4 +1,4 @@
-enum _CodingKey: CodingKey {
+enum _CodingKey: CodingKey & Sendable {
     case int(Int)
     case string(String)
 

@@ -1,9 +1,9 @@
-public struct FormDotDecoder {
+public struct FormDotDecoder: Sendable {
     public init() {
         self.userInfo = [:]
     }
 
-    public var userInfo: [CodingUserInfoKey: Any]
+    public var userInfo: [CodingUserInfoKey: any Sendable]
 
     public func decode<T: Decodable>(
         _ type: T.Type, from string: String,

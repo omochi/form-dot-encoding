@@ -1,4 +1,4 @@
-protocol Primitive: LosslessStringConvertible & Codable {}
+protocol Primitive: Sendable & LosslessStringConvertible & Codable {}
 
 extension Bool: Primitive {}
 extension Int8: Primitive {}

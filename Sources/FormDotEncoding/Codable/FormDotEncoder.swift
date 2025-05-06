@@ -1,9 +1,9 @@
-public struct FormDotEncoder {
+public struct FormDotEncoder: Sendable {
     public init() {
         self.userInfo = [:]
     }
 
-    public var userInfo: [CodingUserInfoKey: Any]
+    public var userInfo: [CodingUserInfoKey: any Sendable]
 
     public func encode(_ value: some Encodable) throws -> String {
         let query = try encodeToQuery(value)
