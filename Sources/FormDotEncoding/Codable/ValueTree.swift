@@ -157,9 +157,9 @@ final class ValueTree {
         switch value {
         case .null: return 0
         case .string: return 1
-        case .object(let xs):
+        case .array(let xs):
             var c = 0
-            for x in xs.values {
+            for x in xs {
                 c += x.preserveEmptyObject(depth: depth + 1)
             }
             if c == 0, depth >= 1 {
@@ -167,9 +167,9 @@ final class ValueTree {
                 return 1
             }
             return c
-        case .array(let xs):
+        case .object(let xs):
             var c = 0
-            for x in xs {
+            for x in xs.values {
                 c += x.preserveEmptyObject(depth: depth + 1)
             }
             if c == 0, depth >= 1 {
