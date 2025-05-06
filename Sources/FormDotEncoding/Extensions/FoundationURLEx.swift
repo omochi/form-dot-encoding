@@ -8,4 +8,21 @@ extension URL {
 
         return try? URLQuery.parse(percentEncodedString: query)
     }
+
+    public func merging(
+        _ query: some Sequence<URLQueryElement>,
+        file: StaticString = #file, line: UInt = #line
+    ) throws -> URL {
+        guard var c = URLComponents(url: self, resolvingAgainstBaseURL: false) else {
+            throw InvalidURLError(url: self, file: file, line: line)
+        }
+
+        c.merge(query: query)
+
+        guard let url = c.url else {
+            throw InvalidURLComponentsError(components: c, file: file, line: line)
+        }
+
+        return url
+    }
 }

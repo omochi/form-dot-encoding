@@ -11,4 +11,13 @@ extension URLComponents {
             percentEncodedQueryItems = newValue?.percentEncodedQueryItems
         }
     }
+
+    public mutating func merge(query: some Sequence<URLQueryElement>) {
+        let query = Array(query)
+        if query.isEmpty { return }
+
+        var newQuery = self.queryObject ?? URLQuery()
+        newQuery.merge(query)
+        self.queryObject = newQuery
+    }
 }

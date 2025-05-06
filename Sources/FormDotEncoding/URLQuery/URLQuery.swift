@@ -42,6 +42,37 @@ public struct URLQuery: Sendable & Hashable & CustomStringConvertible {
     public var percentEncodedQueryItems: [URLQueryItem] {
         elements.map(\.percentEncodedQueryItem)
     }
+
+    public mutating func set(_ element: URLQueryElement) {
+        for (i, x) in enumerated() {
+            if x.path == element.path {
+                self[i] = element
+                return
+            }
+        }
+
+        append(element)
+    }
+
+    public mutating func set(path: URLQueryElement.Path, value: String?) {
+        set(URLQueryElement(path: path, value: value))
+    }
+
+    public mutating func set(name: String, value: String?) {
+        set(URLQueryElement(name: name, value: value))
+    }
+
+    public mutating func merge(_ query: some Sequence<URLQueryElement>) {
+        for x in query {
+            set(x)
+        }
+    }
+
+    public func merging(_ query: some Sequence<URLQueryElement>) -> URLQuery {
+        var result = self
+        result.merge(query)
+        return result
+    }
 }
 
 extension URLQuery: RandomAccessCollection & MutableCollection {

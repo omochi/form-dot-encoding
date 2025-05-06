@@ -3,26 +3,24 @@ public import Foundation
 public struct URLQueryElement: Sendable & Hashable & CustomStringConvertible {
     public typealias Path = [String]
 
-    public init(
-        path: [String],
-        value: String?
-    ) {
+    public init(path: Path, value: String?) {
         self.path = path
         self.value = value
     }
 
     public init(
-        path: [some StringProtocol],
-        value: (some StringProtocol)?
+        name: String,
+        value: String?
     ) {
-        self.init(
-            path: path.map { String($0) },
-            value: value.map { String($0) }
-        )
+        let path = name.split(separator: ".").map { String($0) }
+
+        self.init(path: path, value: value)
     }
 
     public var path: Path
     public var value: String?
+
+    public var name: String { path.joined(separator: ".") }
 
     public var description: String {
         let item = percentEncodedQueryItem
@@ -70,15 +68,15 @@ public struct URLQueryElement: Sendable & Hashable & CustomStringConvertible {
         percentEncodedValue value: (some StringProtocol)?,
         file: StaticString = #file, line: UInt = #line
     ) throws(BrokenPercentEncodingError) -> URLQueryElement {
-        let path = try PercentEncoding.decode(string: name).split(separator: ".")
+        let name = try PercentEncoding.decode(string: name)
         let value = try value.map { (value) throws(BrokenPercentEncodingError) in
             try PercentEncoding.decode(string: value, file: file, line: line)
         }
-        return URLQueryElement(path: path, value: value)
+        return URLQueryElement(name: name, value: value)
     }
 
     public var percentEncodedQueryItem: URLQueryItem {
-        let name = PercentEncoding.encode(string: path.joined(separator: "."))
+        let name = PercentEncoding.encode(string: self.name)
         let value = self.value.map(PercentEncoding.encode)
         return URLQueryItem(name: name, value: value)
     }

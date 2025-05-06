@@ -1,4 +1,4 @@
-public struct BrokenPercentEncodingError: Error {
+public struct BrokenPercentEncodingError: Error & CustomStringConvertible {
     public init(
         string: some StringProtocol,
         file: StaticString = #file, line: UInt = #line
@@ -11,4 +11,8 @@ public struct BrokenPercentEncodingError: Error {
     public var string: String
     public var file: StaticString
     public var line: UInt
+
+    public var description: String {
+        "Broken percent encoding: \(string), file=\(file), line=\(line)"
+    }
 }
