@@ -10,7 +10,7 @@ extension URL {
     }
 
     public func merging(
-        _ query: some Sequence<URLQueryElement>,
+        query: some Sequence<URLQueryElement>,
         file: StaticString = #file, line: UInt = #line
     ) throws -> URL {
         guard var c = URLComponents(url: self, resolvingAgainstBaseURL: false) else {
