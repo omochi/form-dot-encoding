@@ -7,12 +7,14 @@ public enum PercentEncoding {
         init() {
             allowed = CharacterSet.urlQueryAllowed
             allowed.remove(charactersIn: "?&=;+:/")
+            allowed.insert(" ")
         }
 
         var allowed: CharacterSet
 
         func encode(string: some StringProtocol) -> String {
-            return string.addingPercentEncoding(withAllowedCharacters: allowed)!
+            let string = string.addingPercentEncoding(withAllowedCharacters: allowed)!
+            return string.replacingOccurrences(of: " ", with: "+")
         }
     }
 
@@ -24,6 +26,7 @@ public enum PercentEncoding {
         string: some StringProtocol,
         file: StaticString = #file, line: UInt = #line
     ) throws(BrokenPercentEncodingError) -> String {
+        let string = string.replacingOccurrences(of: "+", with: " ")
         guard let string = string.removingPercentEncoding else {
             throw BrokenPercentEncodingError(string: string, file: file, line: line)
         }

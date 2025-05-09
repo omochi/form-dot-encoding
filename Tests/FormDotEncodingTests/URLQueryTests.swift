@@ -26,6 +26,17 @@ import FormDotEncoding
     }
 
     @Test(arguments: [
+        ("a=x", .init(name: "a", value: "x")),
+        ("a=x+y%2Bz", .init(name: "a", value: "x y+z")),
+    ] as [(String, URLQueryElement)])
+    func elementDecode(string: String, expected: URLQueryElement) throws {
+        let decoded = try URLQueryElement.parse(percentEncodedString: string)
+        #expect(decoded == expected)
+        let encoded = decoded.description
+        #expect(encoded == string)
+    }
+
+    @Test(arguments: [
         (
             URLQuery(
                 .init(path: ["a"], value: "x"),
