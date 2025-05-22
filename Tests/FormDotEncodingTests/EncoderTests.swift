@@ -42,11 +42,11 @@ import FormDotEncoding
     }
 
     private func encodeRoundtrip1<T: Codable & Equatable>(value: T, string: String) throws {
-        let encoder = FormDotEncoder()
+        let encoder = FormDotEncoder(mode: .urlQuery)
         let encoded = try encoder.encode(value)
         #expect(encoded == string)
 
-        let decoder = FormDotDecoder()
+        let decoder = FormDotDecoder(mode: .urlQuery)
         let decoded = try decoder.decode(T.self, from: encoded)
         #expect(decoded == value)
     }
@@ -64,9 +64,9 @@ import FormDotEncoding
     }
 
     private func encodeNonRoundtrip2<T: Codable & Equatable>(value: T, expected: T) throws {
-        let encoder = FormDotEncoder()
+        let encoder = FormDotEncoder(mode: .urlQuery)
         let encoded = try encoder.encode(value)
-        let decoder = FormDotDecoder()
+        let decoder = FormDotDecoder(mode: .urlQuery)
         let decoded = try decoder.decode(T.self, from: encoded)
         #expect(decoded == expected)
     }

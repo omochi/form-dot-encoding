@@ -1,8 +1,10 @@
 public struct FormDotDecoder: Sendable {
-    public init() {
+    public init(mode: PercentEncoding.Mode) {
+        self.mode = mode
         self.userInfo = [:]
     }
 
+    public var mode: PercentEncoding.Mode
     public var userInfo: [CodingUserInfoKey: any Sendable]
 
     public func decode<T: Decodable>(
@@ -11,7 +13,7 @@ public struct FormDotDecoder: Sendable {
     ) throws -> T {
         let query: URLQuery
         do {
-            query = try URLQuery.parse(percentEncodedString: string, file: file, line: line)
+            query = try URLQuery.parse(mode: mode, percentEncodedString: string, file: file, line: line)
         } catch {
             let x = DecodingError.Context(
                 codingPath: [],

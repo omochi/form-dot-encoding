@@ -16,31 +16,37 @@ public struct URLQuery: Sendable & Hashable & CustomStringConvertible {
     private var elements: [URLQueryElement]
 
     public var description: String {
-        elements.map(\.description).joined(separator: "&")
+        serialize(mode: .urlQuery)
+    }
+
+    public func serialize(mode: PercentEncoding.Mode) -> String {
+        elements.map { $0.serialize(mode: mode) }.joined(separator: "&")
     }
 
     public static func parse(
+        mode: PercentEncoding.Mode,
         percentEncodedString string: some StringProtocol,
         file: StaticString = #file, line: UInt = #line
     ) throws(BrokenPercentEncodingError) -> URLQuery {
         let elements = try string.split(separator: "&").map { (element) throws(BrokenPercentEncodingError) in
-            try URLQueryElement.parse(percentEncodedString: element, file: file, line: line)
+            try URLQueryElement.parse(mode: mode, percentEncodedString: element, file: file, line: line)
         }
         return URLQuery(elements)
     }
 
     public static func parse(
+        mode: PercentEncoding.Mode,
         percentEncodedQueryItems items: [URLQueryItem],
         file: StaticString = #file, line: UInt = #line
     ) throws(BrokenPercentEncodingError) -> URLQuery {
         let elements = try items.map { (item) throws(BrokenPercentEncodingError) in
-            try URLQueryElement.parse(percentEncodedQueryItem: item, file: file, line: line)
+            try URLQueryElement.parse(mode: mode, percentEncodedQueryItem: item, file: file, line: line)
         }
         return URLQuery(elements)
     }
 
-    public var percentEncodedQueryItems: [URLQueryItem] {
-        elements.map(\.percentEncodedQueryItem)
+    public func percentEncodedQueryItems(mode: PercentEncoding.Mode) -> [URLQueryItem] {
+        elements.map { $0.percentEncodedQueryItem(mode: mode) }
     }
 
     public mutating func set(_ element: URLQueryElement) {

@@ -5,10 +5,10 @@ extension URLComponents {
         get {
             guard let percentEncodedQueryItems else { return nil }
 
-            return try? URLQuery.parse(percentEncodedQueryItems: percentEncodedQueryItems)
+            return try? URLQuery.parse(mode: .urlQuery, percentEncodedQueryItems: percentEncodedQueryItems)
         }
         set {
-            percentEncodedQueryItems = newValue?.percentEncodedQueryItems
+            percentEncodedQueryItems = newValue?.percentEncodedQueryItems(mode: .urlQuery)
         }
     }
 
