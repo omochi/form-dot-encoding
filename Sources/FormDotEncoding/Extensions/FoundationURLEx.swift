@@ -6,7 +6,7 @@ extension URL {
             return nil
         }
 
-        return try? URLQuery.parse(percentEncodedString: query)
+        return try? URLQuery.parse(mode: .urlQuery, percentEncodedString: query)
     }
 
     public func merging(

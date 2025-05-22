@@ -23,7 +23,11 @@ public struct URLQueryElement: Sendable & Hashable & CustomStringConvertible {
     public var name: String { path.joined(separator: ".") }
 
     public var description: String {
-        let item = percentEncodedQueryItem
+        serialize(mode: .urlQuery)
+    }
+
+    public func serialize(mode: PercentEncoding.Mode) -> String {
+        let item = percentEncodedQueryItem(mode: mode)
         var result = item.name
         if let value = item.value {
             result += "=" + value
@@ -32,6 +36,7 @@ public struct URLQueryElement: Sendable & Hashable & CustomStringConvertible {
     }
 
     public static func parse<S: StringProtocol>(
+        mode: PercentEncoding.Mode,
         percentEncodedString string: S,
         file: StaticString = #file, line: UInt = #line
     ) throws(BrokenPercentEncodingError) -> URLQueryElement {
@@ -48,36 +53,40 @@ public struct URLQueryElement: Sendable & Hashable & CustomStringConvertible {
         }
 
         return try parse(
+            mode: mode,
             percentEncodedName: name, percentEncodedValue: value,
             file: file, line: line
         )
     }
 
     public static func parse(
+        mode: PercentEncoding.Mode,
         percentEncodedQueryItem item: URLQueryItem,
         file: StaticString = #file, line: UInt = #line
     ) throws(BrokenPercentEncodingError) -> URLQueryElement {
         return try parse(
+            mode: mode,
             percentEncodedName: item.name, percentEncodedValue: item.value,
             file: file, line: line
         )
     }
 
     public static func parse(
+        mode: PercentEncoding.Mode,
         percentEncodedName name: some StringProtocol,
         percentEncodedValue value: (some StringProtocol)?,
         file: StaticString = #file, line: UInt = #line
     ) throws(BrokenPercentEncodingError) -> URLQueryElement {
-        let name = try PercentEncoding.decode(string: name)
+        let name = try PercentEncoding.decode(mode: mode, string: name)
         let value = try value.map { (value) throws(BrokenPercentEncodingError) in
-            try PercentEncoding.decode(string: value, file: file, line: line)
+            try PercentEncoding.decode(mode: mode, string: value, file: file, line: line)
         }
         return URLQueryElement(name: name, value: value)
     }
 
-    public var percentEncodedQueryItem: URLQueryItem {
-        let name = PercentEncoding.encode(string: self.name)
-        let value = self.value.map(PercentEncoding.encode)
+    public func percentEncodedQueryItem(mode: PercentEncoding.Mode) -> URLQueryItem {
+        let name = PercentEncoding.encode(mode: mode, string: self.name)
+        let value = self.value.map { PercentEncoding.encode(mode: mode, string: $0) }
         return URLQueryItem(name: name, value: value)
     }
 }

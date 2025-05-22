@@ -14,7 +14,7 @@ import FormDotEncoding
 
         let profile = Profile(user: User(name: "Alice", age: 20))
 
-        let encoder = FormDotEncoder()
+        let encoder = FormDotEncoder(mode: .form)
         let result = try encoder.encode(profile)
         #expect(result == "user.age=20&user.name=Alice")
     }
@@ -36,11 +36,11 @@ import FormDotEncoding
             billingAddress: nil
         )
 
-        let encoder = FormDotEncoder()
+        let encoder = FormDotEncoder(mode: .form)
         let query = try encoder.encode(profile)
         #expect(query == "primaryAddress.zipCode=12345&secondaryAddress=_")
 
-        let decoder = FormDotDecoder()
+        let decoder = FormDotDecoder(mode: .form)
         let decoded = try decoder.decode(Profile.self, from: query)
         #expect(decoded == profile)
     }
@@ -52,11 +52,11 @@ import FormDotEncoding
 
         let status = Status.active
 
-        let encoder = FormDotEncoder()
+        let encoder = FormDotEncoder(mode: .form)
         let query = try encoder.encode(status)
         #expect(query == "active=_")
 
-        let decoder = FormDotDecoder()
+        let decoder = FormDotDecoder(mode: .form)
         let decoded = try decoder.decode(Status.self, from: query)
         #expect(decoded == status)
     }

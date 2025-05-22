@@ -1,13 +1,15 @@
 public struct FormDotEncoder: Sendable {
-    public init() {
+    public init(mode: PercentEncoding.Mode) {
+        self.mode = mode
         self.userInfo = [:]
     }
 
+    public var mode: PercentEncoding.Mode
     public var userInfo: [CodingUserInfoKey: any Sendable]
 
     public func encode(_ value: some Encodable) throws -> String {
         let query = try encodeToQuery(value)
-        return query.description
+        return query.serialize(mode: mode)
     }
 
     public func encodeToQuery(_ value: some Encodable) throws -> URLQuery {
